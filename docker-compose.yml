@@ -1,41 +1,53 @@
 version: '3.8'
 
 services:
-  movieflix_app:
-    build: .
+  webapp:
+    build: ./app
     container_name: movieflix_app
     restart: always
+    volumes:
+      - ./data_lake_raw:/app/data_lake_raw
     networks:
-      - movieflix-net
+      - movieflix-network
 
   nginx:
-    image: nginx:latest
-    container_name: nginx_proxy
+    image: nginx:alpine
+    container_name: movieflix_nginx
+    restart: always
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - movieflix_app
-    restart: always
+      - webapp
     networks:
-      - movieflix-net
-# ... (serviços da aplicação e nginx)
-
+      - movieflix-network
+  
   postgres_dw:
-    image: postgres:13                    
-    container_name: postgres_dw           
-    environment:                           
-      POSTGRES_USER: user                  
-      POSTGRES_PASSWORD: password          
-      POSTGRES_DB: movieflix_dw           
+    image: postgres:13
+    container_name: movieflix_postgres_dw
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: movieflix_dw
     ports:
-      - "5432:5432"                        
+      - "5432:5432"
     volumes:
-      - ./data_lake:/data_lake          
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - movieflix-net                      
-      
+      - movieflix-network
+
+  etl_runner:
+    build:
+      context: ./etl
+    container_name: movieflix_etl
+    depends_on:
+      - postgres_dw
+    volumes:
+      - ./data_lake_raw:/app/data_lake_raw
+    networks:
+      - movieflix-network
 
 networks:
-  movieflix-net:
+  movieflix-network:
+    driver: bridge

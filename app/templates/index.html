@@ -1,40 +1,41 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MovieFlix</title>
+    <title>MovieFlix - Avalie Filmes</title>
+    <link rel="stylesheet" href="./static/style.css">
 </head>
 <body>
-    <h1>MovieFlix</h1>
+    <div class="container">
+        <h1>MovieFlix</h1>
+        <form action="/" method="post">
+            <input type="number" name="user_id" placeholder="Seu ID de Usuário (ex: 1)" required>
+            <input type="text" name="movie_title" placeholder="Nome do Filme" required>
+            <input type="number" name="rating" min="1" max="5" placeholder="Nota (1-5)" required>
+            <button type="submit">Avaliar</button>
+        </form>
 
-    <h2>Cadastrar Filme</h2>
-    <form id="movieForm">
-        <input type="text" id="title" placeholder="Título do Filme" required>
-        <input type="text" id="genre" placeholder="Gênero" required>
-        <button type="submit">Cadastrar</button>
-    </form>
-
-    <h2>Filmes Cadastrados</h2>
-    <ul>
-        {% for id, movie in movies.items() %}
-            <li>{{ movie.title }} ({{ movie.genre }})</li>
-        {% endfor %}
-    </ul>
-
-    <script>
-        document.getElementById('movieForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-            const title = document.getElementById('title').value;
-            const genre = document.getElementById('genre').value;
-
-            await fetch('/filme', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, genre })
-            });
-
-            location.reload();
-        });
-    </script>
+        <h2>Últimas Avaliações</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuário ID</th>
+                    <th>Filme</th>
+                    <th>Nota</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rating in ratings %}
+                <tr>
+                    <td>{{ rating.userId }}</td>
+                    <td>{{ rating.movie_title }}</td>
+                    <td>{{ rating.rating }}</td>
+                    <td>{{ rating.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
