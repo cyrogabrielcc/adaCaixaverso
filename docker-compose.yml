@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  movieflix_app:
+    build: .
+    container_name: movieflix_app
+    restart: always
+    networks:
+      - movieflix-net
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - movieflix_app
+    restart: always
+    networks:
+      - movieflix-net
+# ... (serviços da aplicação e nginx)
+
+  postgres_dw:
+    image: postgres:13                    
+    container_name: postgres_dw           
+    environment:                           
+      POSTGRES_USER: user                  
+      POSTGRES_PASSWORD: password          
+      POSTGRES_DB: movieflix_dw           
+    ports:
+      - "5432:5432"                        
+    volumes:
+      - ./data_lake:/data_lake          
+    networks:
+      - movieflix-net                      
+      
+
+networks:
+  movieflix-net:

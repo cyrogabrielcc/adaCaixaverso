@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>MovieFlix</title>
+</head>
+<body>
+    <h1>MovieFlix</h1>
+
+    <h2>Cadastrar Filme</h2>
+    <form id="movieForm">
+        <input type="text" id="title" placeholder="Título do Filme" required>
+        <input type="text" id="genre" placeholder="Gênero" required>
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <h2>Filmes Cadastrados</h2>
+    <ul>
+        {% for id, movie in movies.items() %}
+            <li>{{ movie.title }} ({{ movie.genre }})</li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        document.getElementById('movieForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const genre = document.getElementById('genre').value;
+
+            await fetch('/filme', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title, genre })
+            });
+
+            location.reload();
+        });
+    </script>
+</body>
+</html>
