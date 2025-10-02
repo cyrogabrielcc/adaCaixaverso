@@ -1,42 +1,24 @@
-# 1. Nome do Workflow
 name: CI/CD Pipeline - MovieFlix
-
-# 2. Gatilho (Trigger)
 on:
   push:
     branches: [ main ]
-
-# 3. Tarefas (Jobs)
 jobs:
-  # 4. Nome da Tarefa
   build-and-push:
-    # 5. Ambiente de Execução
     runs-on: ubuntu-latest
-
-    # 6. Passos (Steps)
     steps:
-    # Passo 6.1: Baixar o código do repositório
     - name: Checkout do código
       uses: actions/checkout@v3
-
-    # Passo 6.2: Fazer login no Docker Hub
     - name: Login no Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    # Passo 6.3: Construir a imagem Docker
     - name: Build da imagem Docker
       run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/movieflix:latest .
-
-    # Passo 6.4: Testar a aplicação
     - name: Teste simples da aplicação
       run: |
         docker run -d --name movieflix-test -p 5000:5000 ${{ secrets.DOCKERHUB_USERNAME }}/movieflix:latest
         sleep 10
         curl http://localhost:5000/health | grep "OK"
-
-    # Passo 6.5: Enviar a imagem para o Docker Hub
     - name: Push da imagem para o Docker Hub
       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/movieflix:latest

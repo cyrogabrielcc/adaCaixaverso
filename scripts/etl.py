@@ -8,9 +8,9 @@ db_string = "postgresql://user:password@localhost:5432/movieflix_dw"
 engine = create_engine(db_string)
 print("Conexão com o Data Warehouse estabelecida.")
 
-movies_path = '../datalake/movies.csv'
-users_path = '../datalake/users.csv'
-ratings_path = '../datalake/ratings.csv'
+movies_path = './data_lake/movies.csv'
+users_path = './data_lake/users.csv'
+ratings_path = './data_lake/ratings.csv'
 
 df_movies = pd.read_csv(movies_path)
 df_users = pd.read_csv(users_path)
